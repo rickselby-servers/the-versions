@@ -1,0 +1,52 @@
+version: '2.4'
+
+services:
+  app:
+    container_name: the-versions-app
+    image: wordpress:5.0-php7.3-fpm-alpine
+    restart: always
+    depends_on:
+      - db
+    volumes:
+      - the-versions-site:/var/www/html
+    networks:
+      - the-versions
+  web:
+    container_name: the-versions-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: the-versions-web
+    restart: always
+    depends_on:
+      - app
+    environment:
+      VIRTUAL_HOST: www.the-versions.co.uk
+    networks:
+      - the-versions
+    volumes:
+      - the-versions-site:/var/www/html
+  db:
+    container_name: the-versions-db
+    image: mysql:5
+    restart: always
+    networks:
+      - the-versions
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
+      MYSQL_DATABASE: 'the-versions'
+      MYSQL_USER: 'the-versions'
+      MYSQL_PASSWORD: 'localpassword'
+    ports:
+      # Only for migration. Once migrated, close this port.
+      - "33063:3306"
+    volumes:
+      - the-versions-db:/var/lib/mysql
+
+volumes:
+  the-versions-db:
+  the-versions-site:
+
+networks:
+  the-versions:
+    name: the-versions
