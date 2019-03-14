@@ -3,50 +3,45 @@ version: '2.4'
 services:
   app:
     container_name: the-versions-app
-    image: wordpress:5.0-php7.3-fpm-alpine
+    image: wordpress:5.1-php7.3-fpm-alpine
     restart: always
     depends_on:
       - db
     volumes:
-      - the-versions-site:/var/www/html
-    networks:
-      - the-versions
+      - site:/var/www/html
+
   web:
     container_name: the-versions-web
     build:
       context: .
       dockerfile: Dockerfile
-    image: the-versions-web
     restart: always
     depends_on:
       - app
     environment:
-      VIRTUAL_HOST: www.the-versions.co.uk
-    networks:
-      - the-versions
+      VIRTUAL_HOST: ${VIRTUAL_HOST}
+      LETSENCRYPT_HOST: ${VIRTUAL_HOST}
+      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
     volumes:
-      - the-versions-site:/var/www/html
+      - site:/var/www/html
+
   db:
     container_name: the-versions-db
     image: mysql:5
     restart: always
-    networks:
-      - the-versions
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
       MYSQL_DATABASE: 'the-versions'
       MYSQL_USER: 'the-versions'
       MYSQL_PASSWORD: 'localpassword'
-    ports:
-      # Only for migration. Once migrated, close this port.
-      - "33063:3306"
     volumes:
-      - the-versions-db:/var/lib/mysql
+      - db:/var/lib/mysql
 
 volumes:
-  the-versions-db:
-  the-versions-site:
+  db:
+  site:
 
 networks:
-  the-versions:
-    name: the-versions
+  default:
+    external:
+      name: the-versions
