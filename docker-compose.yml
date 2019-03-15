@@ -38,6 +38,7 @@ services:
       - db:/var/lib/mysql
 
   redirect:
+    container_name: the-versions-redirect
     image: morbz/docker-web-redirect
     restart: always
     environment:
