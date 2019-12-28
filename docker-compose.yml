@@ -5,8 +5,6 @@ services:
     container_name: the-versions-app
     image: wordpress:5.1-php7.3-fpm-alpine
     restart: always
-    depends_on:
-      - db
     volumes:
       - site:/var/www/html
 
@@ -25,18 +23,6 @@ services:
     volumes:
       - site:/var/www/html
 
-  db:
-    container_name: the-versions-db
-    image: mysql:5
-    restart: always
-    environment:
-      MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-      MYSQL_DATABASE: 'the-versions'
-      MYSQL_USER: 'the-versions'
-      MYSQL_PASSWORD: 'localpassword'
-    volumes:
-      - db:/var/lib/mysql
-
   redirect:
     container_name: the-versions-redirect
     image: morbz/docker-web-redirect
@@ -48,7 +34,6 @@ services:
       REDIRECT_TARGET: ${VIRTUAL_HOST}
 
 volumes:
-  db:
   site:
 
 networks:
