@@ -16,7 +16,6 @@ jobs:
           CLIENT_KEY: ${{ secrets.CLIENT_KEY }}
       - uses: rickselby-web-server/actions/docker-compose-deploy@main
         with:
-          COMPOSE_FILE_PATH: docker-compose.yml
           CONNECT_CONTAINERS: mysql,nginx-proxy
           STACK_NAME: the-versions
         env:
