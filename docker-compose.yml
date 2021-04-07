@@ -3,23 +3,21 @@ version: '2.4'
 services:
   app:
     container_name: the-versions-app
-    image: wordpress:5.1-php7.3-fpm-alpine
+    build: wordpress
     restart: always
     volumes:
       - site:/var/www/html
 
   web:
     container_name: the-versions-web
-    build:
-      context: .
-      dockerfile: Dockerfile
+    build: nginx
     restart: always
     depends_on:
       - app
     environment:
-      VIRTUAL_HOST: ${VIRTUAL_HOST}
-      LETSENCRYPT_HOST: ${VIRTUAL_HOST}
-      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
+      VIRTUAL_HOST: www.the-versions.co.uk
+      LETSENCRYPT_HOST: www.the-versions.co.uk
+      LETSENCRYPT_EMAIL:
     volumes:
       - site:/var/www/html
 
@@ -28,15 +26,14 @@ services:
     image: morbz/docker-web-redirect
     restart: always
     environment:
-      VIRTUAL_HOST: ${REDIRECT_VIRTUAL_HOST}
-      LETSENCRYPT_HOST: ${REDIRECT_VIRTUAL_HOST}
-      LETSENCRYPT_EMAIL: ${LETSENCRYPT_EMAIL}
-      REDIRECT_TARGET: ${VIRTUAL_HOST}
+      VIRTUAL_HOST: the-versions.co.uk
+      LETSENCRYPT_HOST: the-versions.co.uk
+      LETSENCRYPT_EMAIL:
+      REDIRECT_TARGET: www.the-versions.co.uk
 
 volumes:
   site:
 
 networks:
   default:
-    external:
-      name: the-versions
+    name: the-versions
